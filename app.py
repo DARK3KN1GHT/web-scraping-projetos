@@ -1,5 +1,6 @@
 import csv
 from datetime import datetime
+import os
 import requests
 from bs4 import BeautifulSoup
 
@@ -76,9 +77,17 @@ def buscar_produtos_ecommerce():
     # Ordenando os produtos do mais barato para o mais caro
     produtos_coletados.sort(key=lambda x: x["Preco (£)"])
 
-    # Salvando os resultados em um arquivo CSV com nome dinâmico único
+    # --- 📂 ORGANIZAÇÃO DE DIRETÓRIO ---
+    # Garantindo que a pasta 'dados' exista de forma automatizada
+    pasta_destino = "dados"
+    os.makedirs(pasta_destino, exist_ok=True)
+
+    # Definindo o caminho completo do arquivo dentro da pasta 'dados'
     nome_arquivo = f"produtos_{termo_busca}_{data_hora_atual}.csv"
-    with open(nome_arquivo, mode="w", newline="", encoding="utf-8") as f:
+    caminho_completo = os.path.join(pasta_destino, nome_arquivo)
+
+    # Salvando os resultados no CSV dentro da pasta 'dados'
+    with open(caminho_completo, mode="w", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(f, fieldnames=["Produto", "Preco (£)"])
         writer.writeheader()
         writer.writerows(produtos_coletados)
@@ -90,7 +99,7 @@ def buscar_produtos_ecommerce():
     print(f"🎯 Termo Pesquisado        : {termo_busca.upper()}")
     print(f"⏱️ Data/Hora da Varredura  : {data_formatada_exibicao}")
     print(f"📦 Oportunidades Encontradas : {len(produtos_coletados)}")
-    print(f"💾 Relatório Exportado em    : {nome_arquivo}")
+    print(f"📁 Diretório de Exportação : /dados/{nome_arquivo}")
     print("-" * 60)
 
     if produtos_coletados:
